@@ -17,8 +17,9 @@
   },
   "name": "johnnykins-blackbox",
   "description": "- Author Johnathan Edward Brown - This allows you to run a Auth0 Server in runetime as simple as setting up a public folder in your node module and importing auth0-blackbox - after importing the class object Container from it! You can use Container class to run the public website code through a auth0 container server that is Triple encapsulated using classes and with 2 layers of obfuscation. - Tutorials will be included on using here soon....",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "main": "index.js",
+  "repository":"https://github.com/john1234brown/johnnykins-blackbox",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
