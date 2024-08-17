@@ -629,6 +629,8 @@ const Obbyy = new Run('./index.js', 15000, true);
 const { pObby } = require('johnnykins-blackbox');
 // File, Time Interval For Internal Server, Time Interval For Parent, Using Env File?
 const merrr = new pObby('./index.js', 30000, 60000, true);
+// For authentication server or regular server which may need live session time so 5 minute window!
+const RealLifeExample = new pObby('./index.js', 300000, 600000, true);
 ```
 
 ### Credits

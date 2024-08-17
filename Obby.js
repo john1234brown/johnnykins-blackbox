@@ -8,14 +8,13 @@ const app = express();
 var listen = app.listen(3001, () => {
   console.log('Server is running on http://localhost:3001');
 });
-process.stdout.on(GLOBAL_STRING, ()=>{
+process.stdout.on(GLOBALLY.getGlobalString(), ()=>{
   app.removeAllListeners();
   listen.closeAllConnections();
   listen.close();
   setTimeout(() =>{
   }, 1000);
 });*/
-require('dotenv').config();
 const babel = require('@babel/core');
 const parser = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
@@ -70,11 +69,11 @@ class Run {
   * @param {number} timing - The Obfuscation Rotation Interval in ms
   * Changes Obfuscation based on @param {number} timing and Executes
   */
-  constructor(serverFile, timing){
-    this.#obby = this.#generateObby(serverFile, timing);
+  constructor(serverFile, timing, UseEnv){
+    this.#obby = this.#generateObby(serverFile, timing, UseEnv);
   }
 
-  #generateObby(serverFile, timing){
+  #generateObby(serverFile, timing, useEnvFile){
     //Author: Johnathan Edward Brown August 16, 2024
     //Originally made in June 5, 2014 //Without the class constructor setup and failed secured communication protocol! But was finished and kept by Nakamoto! For The usage on BTC Creation and success!
     //Which proves its value! To The Open Source community as Satoshi wanted to wait and see if it was a truly secure design pattern to faciliate and use against future increase in Pentesting Tools Technologies!
@@ -115,6 +114,9 @@ class Run {
        */
       constructor(serverFile, timing, useEnvFile){
           this.#useEnv = useEnvFile;
+          if(useEnvFile){
+            require('dotenv').config();
+          }
           this.#breakValue = true;
           this.#process2 = process;
           this.#TheFile = fs3.readFileSync(path.join(process.cwd(), serverFile), 'utf8');
@@ -183,7 +185,7 @@ class Run {
             compact: true,
             controlFlowFlattening: true,
             deadCodeInjection: true,
-            disableConsoleOutput: false,
+            disableConsoleOutput: true,
             identifierNamesGenerator: 'hexadecimal',
             identifiersPrefix: '',
             renameGlobals: true,
@@ -303,7 +305,6 @@ class Run {
           //Re creates Secondary Process for a Refresh of the potentially infected process!
           this.#process2 = process;
           //Properly rotates the globally communication channel!
-          this.#GlobalReference = this.#generateGlobal();
           const middleTransformedCode = this.#transformCode(this.#TheFile);
           //const finalTransformedCode = obfuscateCode(middleTransformedCode);
 
@@ -346,7 +347,7 @@ class Run {
           this.#context = vm.createContext(this.#sandbox);
           // Execute the code in the context
           console.log('Starting context run!');
-          fs3.writeFileSync('./output.js', code);
+//          fs3.writeFileSync('./output.js', code);
           try {
           vm.runInContext(code, this.#context);
           }catch(err){
@@ -357,6 +358,7 @@ class Run {
               console.log('Stopping VM...');
               try {
               this.#sandbox.process.stdout.emit(GLOBALLY.getGlobalString());
+              this.#GlobalReference = this.#generateGlobal();
               }catch(err){
               
               }
@@ -376,11 +378,11 @@ class Run {
       }
 
       terminate(){
-        this.#sandbox.process.stdout.emit(GLOBALLY.getGlobalString());
+        this.#sandbox.process.stdout.emit(this.#GlobalReference.getGlobalString());
       }
     }
 
-    return new Obby(serverFile, timing);
+    return new Obby(serverFile, timing, useEnvFile);
   }
 
   break(){
