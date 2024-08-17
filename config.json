@@ -1,0 +1,77 @@
+{
+  "variables": {
+    "express": "express",
+    "session": "session",
+    "crypto": "crypto",
+    "lastRequestTime": "lastRequestTime",
+    "rotationInterval": "rotationInterval",
+    "sessionStore2": "sessionStore2",
+    "sessionStore": "sessionStore",
+    "app": "app",
+    "sessionSecret": "sessionSecret",
+    "i1": "i1",
+    "userSub": "userSub",
+    "userSid": "userSid",
+    "sessionId": "sessionId",
+    "subRegex": "subRegex",
+    "sidRegex": "sidRegex",
+    "sessionIdRegex": "sessionIdRegex",
+    "sanitizedSub": "sanitizedSub",
+    "sanitizedSid": "sanitizedSid",
+    "sanitizedSessionId": "sanitizedSessionId",
+    "config": "config",
+    "sessionLastActivity": "sessionLastActivity",
+    "SESSION_TIMEOUT": "SuX9rCE3u2D2",
+    "lastActivity": "lastActivity",
+    "currentTime": "currentTime",
+    "response": "response",
+    "json": "json",
+    "key": "key",
+    "keyObject": "keyObject",
+    "JWKS": "z8kqFjmtZ2r4",
+    "string": "string",
+    "logoutToken": "logoutToken",
+    "payload": "payload",
+    "timeSinceLastRequest": "timeSinceLastRequest",
+    "data": "data",
+    "idToken": "idToken",
+    "listen": "listen"
+  },
+  "functions": {
+    "generateSecret": "generateSecret",
+    "configureSessionMiddleware": "configureSessionMiddleware",
+    "updateSessionSecret": "updateSessionSecret",
+    "updateSessionKeys": "updateSessionKeys",
+    "validateInput": "validateInput",
+    "sanitizeInput": "sanitizeInput",
+    "verifyAuth0Session": "verifyAuth0Session",
+    "deleteUserSessions": "deleteUserSessions",
+    "getJWKS": "getJWKS",
+    "getKey": "getKey",
+    "verifyLogoutToken": "verifyLogoutToken",
+    "enforceSessionTimeout": "enforceSessionTimeout",
+    "respondSubmit": "respondSubmit"
+  },
+  "envVars": {
+    "AUTH0_DOMAIN": {
+      "name": "vx6COJ8T5phz",
+      "value": "https://dev-vh2t60m5403ism26.us.auth0.com"
+    },
+    "AUTH0_CLIENT_ID": {
+      "name": "IEJxf_0ULuax",
+      "value": "Lv5Q0Ov1294n3QqBsHE3NWJyL4oJyZyO"
+    },
+    "AUTH0_CLIENT_SECRET": {
+      "name": "hE9tZcL56WXr",
+      "value": "none"
+    },
+    "SECRET": {
+      "name": "D5AuAZoEm76e",
+      "value": "your-secret"
+    },
+    "BASE_URL": {
+      "name": "Me2olcOXJxRY",
+      "value": "https://mature-thrush-manually.ngrok-free.app/"
+    }
+  }
+}

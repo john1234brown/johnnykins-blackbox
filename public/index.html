@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="keywords"
+    content="NanoRaffle, Raffle, Gambling, Stock Gambling, Nano Crypto" />
+  <title> Auth0: Express Static Template Secured Design By Satoshi/Johnathan Edward Brown</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/x-icon" href="assets/logos/TabLogo.png">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- KEEP THIS V so borders work properly on the Table! Under Search! --->
+  <!--<script src="jquery-3.6.3.min.js"></script>-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <script src="Auth0script.js"></script>
+  <script src="script2.js"></script>
+</head>
+
+<body class="body">
+            <div class="collapse" id="collapseExample">
+              <div class="cardDetails cardDetails-body">
+                <p>Here you will be required to sign in using our Auth0 Application which utilizes auth0 to handle authorizations!</p>
+              </div>
+            </div>
+            <div style="display:flex; flex:auto; justify-content: center;">
+              <button id="login" class="btn btn-secondary">Log In</button>
+              <button id="logout" class="btn btn-secondary" style="display:none;">Log Out</button>
+            </div>
+            <div id="data-form2" style="display:flex; flex:auto; justify-content: center;">
+              
+            </div>
+
+            <div style="display:flex; flex:auto; justify-content: center;">
+              <p>Login to see the form input below!</p>
+              <form class="special" id="data-form" style="display:none;" value="updatePayoutAddress">
+                <label class="special" for="name">Data Users Submit:</label>
+                <input class="special" type="text" id="name" name="name" required>
+                <label class="special" for="address">Data Users Submit 2:</label>
+                <input class="special" type="text" id="address" name="address" required>
+                <button type="btn btn-primary">Submit Data</button>
+              </form>
+            </div>
+
+
+<footer>
+  <div style="display:flex; justify-content: center;">
+  <p> This Website does not claim to be a Security Advisor, That gives advice on security and final security decisions legally. I Do not and Will not be held Liable for any Events.
+  </p>
+  <p class="footerClass footerClassTop">
+  Also wish you respectfully utilize this application or template for personal good reasons!
+  </p>
+  </div>
+  <p class="footerClass">
+  <div style="display:flex; justify-content: center;">&copy;2024 Johnathan Edward Brown</div>
+  </p>
+</footer>
+
+</html>
