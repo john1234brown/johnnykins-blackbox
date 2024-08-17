@@ -9,7 +9,7 @@
 ## Example Server Code
 
 ```js
-//Author: Johnathan Edward Brown August 16, 2024
+//Author: Johnathan Edward Brown
 //With Some Help From: Vampeyer
 //Along With Some Help From: AI Models Such As Gemini, And ChatGPT 4.0 mini and ChatGPT-4.0
 //This includes a fail safe key rotation method just incase server is up past the obfsucated runtime rotation somehow and helps protect the encrypted data as a final layer of security!
@@ -21,7 +21,7 @@
 //I hope these notes are helpful to help users create more secure Auth0 Servers and services in the future!
 //Please check out our Nakamotos-Blackbox For protecting express static servers from XSS, SSRF, path Traversals!
 //Must use GLOBAL_STRING FOR THIS UTILITY FILE TO WORK!!!
-process.stdout.on(GLOBAL.getGlobalString(), ()=>{
+process.stdout.on(GLOBALLY.getGlobalString(), ()=>{
   app.removeAllListeners();
   clearInterval(i1);
   listen.closeAllConnections();
@@ -29,7 +29,7 @@ process.stdout.on(GLOBAL.getGlobalString(), ()=>{
   setTimeout(() =>{
   }, 1000);
 });
-//require('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const { auth, requiresAuth } = require('express-openid-connect');
 const session = require('express-session');
@@ -299,16 +299,29 @@ function verifyAuth0Session(req, res, next) {
 
   }
 }
+/*
+Fix to process environment backdoor! Utilize this solution to still be able to utilize the .env setup!!
+*/
+const local1 = process.env.SECRET;
+delete process.env.SECRET;
+const local2 = process.env.BASE_URL;
+delete process.env.BASE_URL;
+const local3 = process.env.AUTH0_CLIENT_ID;
+delete process.env.AUTH0_CLIENT_ID;
+const local4 = process.env.AUTH0_DOMAIN;
+delete process.env.AUTH0_DOMAIN;
+const local5 = process.env.AUTH0_CLIENT_SECRET;
+delete process.env.AUTH0_CLIENT_SECRET;
 
 const config = {
   authRequired: false,
   auth0Logout: true, // Enable Auth0's automatic logout
   idpLogout: true,
-  secret: process.env.SECRET,
-  baseURL: process.env.BASE_URL,
-  clientID: process.env.AUTH0_CLIENT_ID,
-  issuerBaseURL: `${process.env.AUTH0_DOMAIN}`,
-  clientSecret: process.env.AUTH0_CLIENT_SECRET,
+  secret: local1,
+  baseURL: local2,
+  clientID: local3,
+  issuerBaseURL: `${local4}`,
+  clientSecret: local5,
   session: {
     store: sessionStore.getPrivate(), // Attach your session store
   }
@@ -582,9 +595,10 @@ app.get('/profile', requiresAuth(), (req, res) => {
 var listen = app.listen(3001, () => {
   console.log('Server is running on http://localhost:3001');
 });
+console.log(process.env);
 ```
 
-## How to Use
+## How to Use Obfuscator
 
 - This will allow you to utilize process.env variables from a dotenv file from the top level process!
 - This will allow you to specifiy what interval you want to obfuscate said code in runetime in a encapsulated class!
@@ -595,10 +609,23 @@ var listen = app.listen(3001, () => {
 
 ```js
 require('dotenv').config();
-const { Obby } = require('johnnykins-blackbox');
+const { Run } = require('johnnykins-blackbox');
 
 //Test it out lets goo!
-const Obbyy = new Obby('./index.js', 15000);
+// File, Time Interval, Using Env file?
+const Obbyy = new Run('./index.js', 15000, true);
+```
+
+## How To Use Dual Obfuscator and imports Obfuscation of the Obby class
+
+- This will allow you to obfuscate the Obby.js file as its being required in the pObby.js
+- Utilize a Rotating Obfuscation on the Obby.js
+- While retaining the Original Rotating obfuscation from the Obby.js for the specificed file like here its index.js!
+
+```js
+const { pObby } = require('johnnykins-blackbox');
+// File, Time Interval For Internal Server, Time Interval For Parent, Using Env File?
+const merrr = new pObby('./index.js', 30000, 60000, true);
 ```
 
 ### Credits
