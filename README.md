@@ -6,6 +6,9 @@
 - Go and Build out your obfuscated dreams!!!!! In more secure peace of mind manner!
 - Also it supports process.env obfuscation with translations! So if you need to use dotenv file we got you covered :D! All Though this Wouldn't be the Ideal method for holding Secrets! In Production Server So Please be advised.... You've Been warned!
 
+## Example Projects and Base Code Backstory
+- [Click me to check out examples](https://github.com/john1234brown/johnnykins-blackbox/tree/examples)
+
 ## Example Server Code
 
 ```js
