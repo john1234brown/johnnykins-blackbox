@@ -20,7 +20,7 @@
 //WE Limit to 5 minutes to allow 5 minute window of accessiblity from the website entry point!
 //I hope these notes are helpful to help users create more secure Auth0 Servers and services in the future!
 //Please check out our Nakamotos-Blackbox For protecting express static servers from XSS, SSRF, path Traversals!
-//Must use GLOBAL_STRING FOR THIS UTILITY FILE TO WORK!!!
+//Must use GLOBALLY FOR THIS UTILITY FILE TO WORK!!!
 process.stdout.on(GLOBALLY.getGlobalString(), ()=>{
   app.removeAllListeners();
   clearInterval(i1);
