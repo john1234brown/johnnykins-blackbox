@@ -22,6 +22,7 @@
 
 
 # Credits
+- [Vampeyer](https://github.com/vampeyer)
 - Murphy's Law
 - Snake eating itself
 - CHAT-GPT-4.0 for boiler design with babel for vm setups!
