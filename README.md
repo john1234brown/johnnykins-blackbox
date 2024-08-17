@@ -620,7 +620,10 @@ const Obbyy = new Run('./index.js', 15000, true);
 
 - This will allow you to obfuscate the Obby.js file as its being required in the pObby.js
 - Utilize a Rotating Obfuscation on the Obby.js
-- While retaining the Original Rotating obfuscation from the Obby.js for the specificed file like here its index.js!
+- While retaining the Original Rotating obfuscation from the Obby.js for the specified file like here we are using index.js!
+- Every 30 seconds the webserver is rotating obfuscation from the obfuscated Obby.js
+- While every 60 seconds the Obby.js gets reobfuscated!
+- Enjoy easier dual Obfuscation with peace of mind! :D
 
 ```js
 const { pObby } = require('johnnykins-blackbox');
