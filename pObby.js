@@ -82,7 +82,7 @@ class pObby {
           compact: true,
           controlFlowFlattening: true,
           deadCodeInjection: true,
-          disableConsoleOutput: true,
+          disableConsoleOutput: false,
           identifierNamesGenerator: 'hexadecimal',
           identifiersPrefix: '',
           renameGlobals: true,
