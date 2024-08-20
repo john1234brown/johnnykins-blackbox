@@ -1,7 +1,3 @@
-const fs3 = require('fs');
-const path = require('node:path');
-const JavaScriptObfuscator = require('javascript-obfuscator');
-const newRequire = require;
 //Author: Johnathan Edward Brown August 17, 2024
 //Made for utility usage for obfuscation from babel and then javascript-obfuscator with timed interval configuration for rotating obfuscation while keeping
 //To Obfuscate the obfuscator and rotator class in runetime!
@@ -15,8 +11,32 @@ class pObby {
     #useEnv
     #timeOut
     #breakValue
-
-    constructor(serverFile, timing, importTiming, useEnvFile){
+    /**
+    * @param {string} serverFile - The Server code to obfuscate
+    * @param {number} timing - The Obfuscation Rotation Interval in ms
+    * @param {number} importtiming - The Obfuscation timing for importing!
+    * @param {boolean} useEnvFile - Are you using .env file? if so true! if not false!
+    * 
+    * Changes Obfuscation based on @param {number} timing and @param {number} importTiming and Executes Server Code!
+    *
+    * Must use the following at the beginning of ones server code for this utility to work!
+    * const app = express();
+    * var listen = app.listen(3001, () => {
+    *   console.log('Server is running on http://localhost:3001');
+    * });
+    * process.child.on(GLOBALLY, ()=>{
+    *   console.log('Child Killed Recieved!');
+    *   app.removeAllListeners();
+    *   clearInterval(i1); //Clear any intervals or timeouts as well!
+    *   listen.closeAllConnections();
+    *   listen.close();
+    *   setTimeout(() =>{
+    *   }, 1000);
+    * });
+    */
+    constructor(serverFile, timing, importTiming, useEnvFile, aObby){
+        const fs3 = require('fs');
+        const path = require('node:path');
         this.#breakValue = true;
         this.#useEnv = useEnvFile;
         console.log(path.join(__dirname, 'Obby.js'));
@@ -25,26 +45,34 @@ class pObby {
         this.#Obbied = this.#obfuscateCode(this.#TheFile);
         //console.log('Obfuscated code:', this.#Obbied);
         fs3.writeFileSync(path.join(__dirname, 'Obbiefed.js'), this.#Obbied, 'utf-8');
-        const { Run } = newRequire(path.join(__dirname, 'Obbiefed.js'));
-        fs3.rmSync(path.join(__dirname, 'Obbiefed.js'));
+        const { Run } = require(path.join(__dirname, 'Obbiefed.js'));
+        setTimeout( () => {
+            fs3.unlinkSync(path.join(__dirname, 'Obbiefed.js'));
+        }, 100);
         //WE now have a private sub class!
         this.#serverFile = serverFile;
         this.#timing = timing;
         this.#importTiming = importTiming;
         this.#privateObject = this.#generatePrivateSubClass(serverFile, timing, Run, useEnvFile);
+        if ((aObby === undefined || aObby === null) && aObby != true){
         this.#timeOut = setTimeout(() => {
             this.#rotateObby();
         }, importTiming);
     }
+    }
 
     #rotateObby(){
+        const fs3 = require('fs');
+        const path = require('node:path');
         if (this.#breakValue){
-        this.#privateObject.getRun().break();
         console.log('Rotating Obby import!');
         this.#Obbied = this.#obfuscateCode(this.#TheFile);
         fs3.writeFileSync(path.join(__dirname, 'Obbiefed.js'), this.#Obbied, 'utf-8');
         const { Run } = require(path.join(__dirname, 'Obbiefed.js'));
-        fs3.rmSync(path.join(__dirname, 'Obbiefed.js'));
+        setTimeout( () => {
+            fs3.unlinkSync(path.join(__dirname, 'Obbiefed.js'));
+        }, 100);
+        this.#privateObject.getRun().break();
         //We now have a private sub class! Thanks to the Johnnykins! Johnathan Edward Brown, August 17, 2024 1:32 AM Eastern Daylight Savings Timezone
         this.#privateObject = this.#generatePrivateSubClass(this.#serverFile, this.#timing, Run, this.#useEnv);
         this.#timeOut = setTimeout(() => {
@@ -78,6 +106,7 @@ class pObby {
      * @returns {string} - The obfuscated code
      */
     #obfuscateCode(code) {
+        const JavaScriptObfuscator = require('javascript-obfuscator');
         return JavaScriptObfuscator.obfuscate(code, {
           compact: true,
           controlFlowFlattening: true,
@@ -89,8 +118,8 @@ class pObby {
           selfDefending: true,
           splitStrings: true,
           stringArray: true,
-          stringArrayEncoding: ['base64'],
-          stringArrayThreshold: 0.75,
+          stringArrayEncoding: ['base64', 'rc4'],
+          stringArrayThreshold: 1,
           target: 'browser',
           transformObjectKeys: true,
           unicodeEscapeSequence: false,
@@ -110,7 +139,53 @@ class pObby {
     }
 }
 
+//Author: Johnathan Edward Brown August 19, 2024
+class RunPObby {
+    #pObby
+    //New updated setup usage!
+    //Which utilizes a built in private subclass in a private function to further encapsulate the obfuscated code in runtimes context!
+    /**
+    * @param {string} serverFile - The Server code to obfuscate
+    * @param {number} timing - The Obfuscation Rotation Interval in ms
+    * @param {number} importtiming - The Obfuscation timing for importing!
+    * @param {boolean} useEnvFile - Are you using .env file? if so true! if not false!
+    * 
+    * Changes Obfuscation based on @param {number} timing and @param {number} importTiming and Executes Server Code!
+    *
+    * Must use the following at the beginning of ones server code for this utility to work!
+    * const app = express();
+    * var listen = app.listen(3001, () => {
+    *   console.log('Server is running on http://localhost:3001');
+    * });
+    * process.child.on(GLOBALLY, ()=>{
+    *   console.log('Child Killed Recieved!');
+    *   app.removeAllListeners();
+    *   clearInterval(i1); //Clear any intervals or timeouts as well!
+    *   listen.closeAllConnections();
+    *   listen.close();
+    *   setTimeout(() =>{
+    *   }, 1000);
+    * });
+    */
+    constructor(serverFile, timing, importTiming, useEnvFile){
+      try {
+      this.#pObby = new pObby(serverFile, timing, importTiming, useEnvFile);
+      }catch(err){
+        console.log(' RunPObby Err:', err);
+        setTimeout(()=>{
+            console.log('Fixing dont worry! Johnnykins Got your back!');
+
+          }, 1000);
+      }
+    }
+
+    get(){
+        return this.#pObby;
+    }
+}
+
 
 module.exports = {
-    pObby
+    pObby,
+    RunPObby
 }

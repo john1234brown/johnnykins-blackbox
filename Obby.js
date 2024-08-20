@@ -8,53 +8,15 @@ const app = express();
 var listen = app.listen(3001, () => {
   console.log('Server is running on http://localhost:3001');
 });
-process.stdout.on(GLOBALLY.getGlobalString(), ()=>{
+process.child.on(GLOBALLY, ()=>{
+  console.log('Child Killed Recieved!');
   app.removeAllListeners();
+  clearInterval(i1); //Clear any intervals or timeouts as well!
   listen.closeAllConnections();
   listen.close();
   setTimeout(() =>{
   }, 1000);
 });*/
-const babel = require('@babel/core');
-const parser = require('@babel/parser');
-const traverse = require('@babel/traverse').default;
-const generate = require('@babel/generator').default;
-const vm = require('node:vm');
-const fs3 = require('node:fs');
-const path = require('node:path');
-const JavaScriptObfuscator = require('javascript-obfuscator');
-/** the Random Function as a function
- * @param {number} length - The length of the random string to generate
- * @returns {string} - The generated random string
- */
-function generateRandomString(length) {
-  const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_';
-  let randomString = '';
-  const firstCharIndex = Math.floor(Math.random() * letters.length);
-  randomString += letters[firstCharIndex];
-  for (let i = 1; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length);
-    randomString += charset[randomIndex];
-  }
-  return randomString;
-}
-
-/**
-     * @param {string} name - The name to remap
-     * @param {Object} config - The configuration object
-     * @returns {string} - The remapped variable name
-     */
-remapVariable = (name, config) => {
-  if (config) {
-    if (config.variables && config.variables.hasOwnProperty(name)) {
-      return config.variables[name];
-    } else if (config.envVars && config.envVars.hasOwnProperty(name)) {
-      return config.envVars[name].name;
-    }
-  }
-  return name;
-};
 //Author: Johnathan Edward Brown August 17, 2024
 // Realized we could subclass this a little better
 // Thanks to Vampeyer for reminding me of these simple design pattern usages!
@@ -68,9 +30,28 @@ class Run {
   * @param {string} serverFile - The Server code to obfuscate
   * @param {number} timing - The Obfuscation Rotation Interval in ms
   * Changes Obfuscation based on @param {number} timing and Executes
+  * 
+  * Must use the following at the beginning of ones server code for this utility to work!
+  * const app = express();
+  * var listen = app.listen(3001, () => {
+  *   console.log('Server is running on http://localhost:3001');
+  * });
+  * process.child.on(GLOBALLY, ()=>{
+  *   console.log('Child Killed Recieved!');
+  *   app.removeAllListeners();
+  *   clearInterval(i1); //Clear any intervals or timeouts as well!
+  *   listen.closeAllConnections();
+  *   listen.close();
+  *   setTimeout(() =>{
+  *   }, 1000);
+  * });
   */
   constructor(serverFile, timing, UseEnv){
+    try {
     this.#obby = this.#generateObby(serverFile, timing, UseEnv);
+    }catch(err){
+      console.log(err);
+    }
   }
 
   #generateObby(serverFile, timing, useEnvFile){
@@ -83,11 +64,11 @@ class Run {
     //Satoshi learn and grow and succeed in his quest!
     //and how they could be utilized again to Release this time around in a proper utility that people can utilize!
     //Brought back as a proper utility setup in a more secure manner with a parent obfuscation overtop the obby class!
-    //As He Requested!
-    //I Guess the World will still never realize Satoshi Nakamoto is a meaning for Intelligences Central which is to faciliate better security practices and principles, to achieve and thrive for growth in our Intelligence!
+    //I Guess the World will still never realize Satoshi Nakamoto is a meaning for Intelligences Central which is to faciliate better security practices and principles, to achieve and thrive for growth in our Intelligence and Security!
     /**
      * @param {string} serverFile - The Server code to obfuscate
      * @param {number} timing - The Obfuscation Rotation Interval in ms
+     * 
      * Changes Obfuscation based on @param {number} timing and Executes
      */
     class Obby {
@@ -99,46 +80,82 @@ class Run {
       #sandbox
       #context
       //We virtualize the Process By Duplicating the original, with encapsulation in the class object!!!
-      //We now have a private process!!!
       //We now have a secondary process to prevent main process from attack surfaces! mwahahah!
-      #process2
+      //Updated to utilizing proper child process isolation from main process!
+      #child 
       #breakValue
       #timeOut
       #useEnv
+      #childEmitter
+      #parentEmitter
 
       /**
        * @param {string} serverFile - The Server code to obfuscate
        * @param {number} timing - The Obfuscation Rotation Interval in ms
        * @param {boolean} useEnvFile - The Boolean flag that represents if true you are using env file if false you are not!
+       * 
        * Changes Obfuscation based on @param {number} timing and Executes
+       *
+       * Must use the following at the beginning of ones server code for this utility to work!
+       * const app = express();
+       * var listen = app.listen(3001, () => {
+       *   console.log('Server is running on http://localhost:3001');
+       * });
+       * process.child.on(GLOBALLY, ()=>{
+       *   console.log('Child Killed Recieved!');
+       *   app.removeAllListeners();
+       *   clearInterval(i1); //Clear any intervals or timeouts as well!
+       *   listen.closeAllConnections();
+       *   listen.close();
+       *   setTimeout(() =>{
+       *   }, 1000);
+       * });
        */
       constructor(serverFile, timing, useEnvFile){
+          const fs3 = require('node:fs');
+          const path = require('node:path');
           this.#useEnv = useEnvFile;
           if(useEnvFile){
             require('dotenv').config();
           }
           this.#breakValue = true;
-          this.#process2 = process;
           this.#TheFile = fs3.readFileSync(path.join(process.cwd(), serverFile), 'utf8');
           this.#timing = timing;
           // Transform and execute
+//          this.#child = this.#createCustomFork(); //This helps protect the main process of the entire process if WebServer is infected! or attacked!
           this.#transformedCode = this.#transformCode(this.#TheFile);
-          this.#finalCode = this.#obfuscateCode(this.#transformedCode);
-          this.#GlobalReference = this.#generateGlobal();
+          this.#transformedCode = this.#obfuscateCode(this.#transformedCode);
+          this.#GlobalReference = this.#generateGlobal().getGlobalString();
 
           //const finalCode = obfuscateCode(transformedCode);
           //fs3.writeFileSync('./obbys/testObby.js', test);
           //fs3.writeFileSync('./obbys/babelified-debug.js', transformedCode); // Save transformed code
           //eval(transformedCode); // Use vm in production for better security
           //this.#runInVM(this.#finalCode, this.#GlobalReference);//Successful VM setup completed!
-          this.#runInVM(this.#transformedCode, this.#GlobalReference);
+          this.#runInVM(this.#transformedCode);
           //console.log('environment', process.env);
+      }
+
+      #createCustomFork(){
+        const { EventEmitter } = require('node:stream');
+        const { spawn } = require('child_process');
+        const child = spawn('node', []); // Create a child process without a specific script
+        //We isolate with our own environment and working directory along with a on listener!
+        child.cwd = process.cwd();
+        child.env = process.env;
+        //Private communication channel properly!
+        this.#childEmitter = new EventEmitter();
+        child.on = this.#childEmitter.on;
+        child.emit = this.#childEmitter.emit;
+        //child; //Clear out env mappings to protect users Personal Process Environment From being leaked from webserver side!
+        console.log('Creating Child Fork:', child.cwd, child.env);
+        return child;
       }
       //Yes I'm Class Encapsulation / Obfuscation / Rotation Crazy a Bit.....
       //An Encapsulated Global class
       //This adds an extra layer of security to ones communication channel context on process.stdout!
       //Author: Johnathan Edward Brown August 16, 2024
-    
+      //Deprecated!
       #generateGlobal(){
         class JBGlobal {
           #GLOBAL_STRING
@@ -171,6 +188,7 @@ class Run {
         //By giving the web server its own global context to communicate globally and have it obfuscated ensures extra security!
         //Quite literally this one is over kill but very important to protect the custom process.stdout communication channel context of the obfuscated controller to the web server!
         //Johnathan Edward Brown Waz here!!!
+        // And this one was deprecated due to realizations of usages of the child_process to help further isolate from main process context!
         return new JBGlobal();
       }
     
@@ -181,6 +199,7 @@ class Run {
        * @returns {string} - The obfuscated code
        */
       #obfuscateCode(code) {
+          const JavaScriptObfuscator = require('javascript-obfuscator');
           return JavaScriptObfuscator.obfuscate(code, {
             compact: true,
             controlFlowFlattening: true,
@@ -192,8 +211,8 @@ class Run {
             selfDefending: true,
             splitStrings: true,
             stringArray: true,
-            stringArrayEncoding: ['base64'],
-            stringArrayThreshold: 0.75,
+            stringArrayEncoding: ['base64', 'rc4'],
+            stringArrayThreshold: 1,
             target: 'browser',
             transformObjectKeys: true,
             unicodeEscapeSequence: false,
@@ -221,6 +240,7 @@ class Run {
        * @returns {Object} - The generated configuration object
        */
       #generateConfig(ast) {
+          const traverse = require('@babel/traverse').default;
           const config = {
             variables: {},
             functions: {},
@@ -240,6 +260,25 @@ class Run {
           
           config.envVars = { ...envVars };
           }
+
+          /** the Random Function as a function
+            * @param {number} length - The length of the random string to generate
+            * @returns {string} - The generated random string
+            */
+          function generateRandomString(length) {
+            const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_';
+            let randomString = '';
+            const firstCharIndex = Math.floor(Math.random() * letters.length);
+            randomString += letters[firstCharIndex];
+            for (let i = 1; i < length; i++) {
+              const randomIndex = Math.floor(Math.random() * charset.length);
+              randomString += charset[randomIndex];
+            }
+            return randomString;
+          }
+
+          
           
           traverse(ast, {
             VariableDeclaration(path) {
@@ -264,22 +303,47 @@ class Run {
        * @returns {string} - The transformed code
        */
       #transformCode = (code) => {
+          const fs3 = require('node:fs');
+          const generate = require('@babel/generator').default;
+          const traverse = require('@babel/traverse').default;
+          const parser = require('@babel/parser');
           const ast = parser.parse(code, {
             sourceType: 'module',
             plugins: ['classPrivateMethods', 'classPrivateProperties']
           });
         
           const config = this.#generateConfig(ast);
-        
+          Object.keys(process.env).forEach(key =>{
+            if (!config.envVars[key]){
+              delete process.env[key];
+            }
+          })
           Object.keys(config.envVars).forEach(key => {
             //console.log('original env',key,'\n', process.env[key], '\nNew env',config.envVars[key].name,'\n',config.envVars[key].value);
             process.env[key] = "";//Clears out the original process.env values!!! For Proper securit precautions!!!
             process.env[config.envVars[key].name] = config.envVars[key].value;
             //console.log('Test:',process.env[config.envVars[key].name],'\n', config.envVars[key].value);
           });
+          this.#child = this.#createCustomFork(); //This helps protect the main process of the entire process if WebServer is infected! or attacked!
         
-          fs3.writeFileSync('config.json', JSON.stringify(config, null, 2));
-        
+//          fs3.writeFileSync('config.json', JSON.stringify(config, null, 2));
+          
+          /**
+          * @param {string} name - The name to remap
+          * @param {Object} config - The configuration object
+          * @returns {string} - The remapped variable name
+          */
+          function remapVariable(name, config){
+            if (config) {
+              if (config.variables && config.variables.hasOwnProperty(name)) {
+                return config.variables[name];
+              } else if (config.envVars && config.envVars.hasOwnProperty(name)) {
+                return config.envVars[name].name;
+              }
+            }
+            return name;
+          };
+
           traverse(ast, {
             Identifier(path) {
               const nodeName = path.node.name;
@@ -302,31 +366,40 @@ class Run {
       };
     
       #rotateObby() {
-          //Re creates Secondary Process for a Refresh of the potentially infected process!
-          this.#process2 = process;
+          //Kills the original Process and Re creates Secondary Process for a Refresh of the potentially infected process!
+          this.#child.emit(this.#GlobalReference);
+          this.#child.kill(); //Properly Kill!
+          console.log('Chiled: ', this.#child.killed);
+          console.log(this.#child.exitCode, 'Child exit code');
           //Properly rotates the globally communication channel!
           const middleTransformedCode = this.#transformCode(this.#TheFile);
-          //const finalTransformedCode = obfuscateCode(middleTransformedCode);
-
-          //return finalTransformedCode;
-          return middleTransformedCode;
+          const finalTransformedCode = this.#obfuscateCode(middleTransformedCode);
+          this.#transformedCode = finalTransformedCode;
+          return finalTransformedCode;
+          //return middleTransformedCode;
       }
       
       /**
        * @param {string} code - The code to run in a VM
-       * @param {string} GLOBALLY - The Global Object to use communication process securely!
        * Utilizes proper scope passage of the Global communication process string!
        */
-      #runInVM(code, GLOBALLY){
+      #runInVM(code){
+        const fs3 = require('node:fs');
+        const vm = require('node:vm');
+        const path = require('node:path');
         if (this.#breakValue){
-        //console.log('Running context with process.env', process.env);
+          const GLOBALLY = this.#generateGlobal().getGlobalString();
+          this.#GlobalReference = GLOBALLY;
+          const EMITTER = this.#childEmitter;
+          const child = this.#child;
+          //console.log('Running context with process.env', process.env);
           // Create a sandbox with the necessary modules and variables
           this.#sandbox = {
               process: {
-                  env: this.#process2.env,
-                  stdout: this.#process2.stdout,
-                  stderr: this.#process2.stderr,
-                  cwd: this.#process2.cwd
+                  process: this.#child,
+                  child: child,
+                  env: this.#child.env,
+                  cwd: this.#child.cwd
               },
               path,
               fetch,
@@ -338,7 +411,9 @@ class Run {
               clearTimeout,
               Buffer,
               global: {},
+              __dirname,
               GLOBALLY,
+              EMITTER
           };
 
           // Add necessary global variables and functions
@@ -347,22 +422,27 @@ class Run {
           this.#context = vm.createContext(this.#sandbox);
           // Execute the code in the context
           console.log('Starting context run!');
-//          fs3.writeFileSync('./output.js', code);
+          fs3.writeFileSync('./output.js', code);
           try {
-          vm.runInContext(code, this.#context);
+            vm.runInContext(code, this.#context);
           }catch(err){
-            //console.log('Error:', err);
+            console.log('Error:', err);
           }
 
           this.#timeOut = setTimeout(() => {
               console.log('Stopping VM...');
+              this.#transformedCode = this.#rotateObby();
+              this.#runInVM(this.#transformedCode);
+              //Since i learnt about utilizing the removeAllListeners on the Child process from within this obfuscated class! properly closes server!
+              //Probably can redact the below code!
+              /*
               try {
               this.#sandbox.process.stdout.emit(GLOBALLY.getGlobalString());
               this.#GlobalReference = this.#generateGlobal();
               }catch(err){
               
               }
-              this.#runInVM(this.#rotateObby(), this.#GlobalReference);
+              this.#runInVM(this.#rotateObby(), this.#GlobalReference);*/
           }, this.#timing);
         }else{
           return;
@@ -378,7 +458,10 @@ class Run {
       }
 
       terminate(){
-        this.#sandbox.process.stdout.emit(this.#GlobalReference.getGlobalString());
+        this.#child.emit(this.#GlobalReference);
+        this.#child.kill(); //Properly Kill!
+        console.log('Chiled: ', this.#child.killed);
+        console.log(this.#child.exitCode, 'Child exit code');
       }
     }
 

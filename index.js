@@ -1,3 +1,4 @@
+const { aObby } = require('./aObby.js');
 const { Run } = require('./Obby.js');
 const { pObby } = require('./pObby.js');
 console.log('Johnnykins-Blackbox Obfuscated Encapsulation Webserver Hosting Solution!');
@@ -11,5 +12,6 @@ console.log('Copyright: Johnathan Edward Brown 2024');
 
 module.exports = {
     Run,
-    pObby
+    pObby,
+    aObby
 }
